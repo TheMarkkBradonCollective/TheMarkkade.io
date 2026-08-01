@@ -149,3 +149,20 @@ Future Markkade games will share:
 - Achievements
 - Progression
 - Social features
+
+---
+
+# Play
+
+| Page | Path |
+|------|------|
+| Markkade hub | [`index.html`](index.html) |
+| Markk'd Bills | [`games/markkdbills/`](games/markkdbills/) |
+
+```bash
+python3 -m http.server 8080
+```
+
+Open `http://localhost:8080` then launch **Markk'd Bills**.
+
+Every player starts with **$500 USD**. Progress is saved in the browser (`localStorage`).

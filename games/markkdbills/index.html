@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090d" />
+  <title>Markk'd Bills — Markkade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="fx-layer" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="back" href="../../">← Markkade</a>
+    <div class="topbar-brand">
+      <span class="brand-name">Markk'd Bills</span>
+      <span class="brand-sub">5-Slot Currency Machine</span>
+    </div>
+    <div class="top-balances">
+      <div class="pill" title="USD for spins">
+        <span class="pill-label">USD</span>
+        <strong id="usdBalance">$500.00</strong>
+      </div>
+      <div class="pill pill-markkade" title="Markkade balance">
+        <span class="pill-label">MKD</span>
+        <strong id="markkadeBalance">0.00</strong>
+      </div>
+    </div>
+  </header>
+
+  <main class="game">
+    <section class="machine" aria-label="Five reel slot machine">
+      <div class="machine-frame">
+        <div class="payline-label">PAYLINE</div>
+        <div class="reels" id="reels" role="img" aria-label="Slot reels">
+          <div class="reel" data-reel="0"><div class="reel-window"><span class="symbol">$</span></div></div>
+          <div class="reel" data-reel="1"><div class="reel-window"><span class="symbol">€</span></div></div>
+          <div class="reel" data-reel="2"><div class="reel-window"><span class="symbol">£</span></div></div>
+          <div class="reel" data-reel="3"><div class="reel-window"><span class="symbol">¥</span></div></div>
+          <div class="reel" data-reel="4"><div class="reel-window"><span class="symbol">₿</span></div></div>
+        </div>
+        <div class="payline" aria-hidden="true"></div>
+      </div>
+
+      <p class="result" id="resultMsg" aria-live="polite">Match 3+ currency symbols to earn bills.</p>
+
+      <div class="controls">
+        <label class="bet">
+          <span>Spin Cost</span>
+          <select id="betSelect">
+            <option value="1">$1</option>
+            <option value="2" selected>$2</option>
+            <option value="5">$5</option>
+            <option value="10">$10</option>
+          </select>
+        </label>
+        <button class="spin-btn" id="spinBtn" type="button">SPIN</button>
+        <button class="ghost-btn" id="autoBtn" type="button">AUTO</button>
+      </div>
+    </section>
+
+    <aside class="panels">
+      <section class="panel wallet-panel">
+        <div class="panel-head">
+          <h2>🏦 Wallet</h2>
+          <button class="text-btn" id="cashOutBtn" type="button">USD → Markkade</button>
+        </div>
+        <ul class="wallet-list" id="walletList"></ul>
+      </section>
+
+      <section class="panel exchange-panel">
+        <div class="panel-head">
+          <h2>💱 Global Exchange</h2>
+          <div class="timer" id="marketTimer" aria-live="polite">
+            <span class="timer-icon">⏱️</span>
+            <strong id="timerValue">05:00</strong>
+          </div>
+        </div>
+        <p class="exchange-meta" id="exchangeMeta">12 Available · 8 Locked</p>
+        <div class="routes" id="routes"></div>
+        <div class="trade-box" id="tradeBox" hidden>
+          <p class="trade-title" id="tradeTitle">Trade</p>
+          <div class="trade-row">
+            <input id="tradeAmount" type="number" min="0" step="any" placeholder="Amount" />
+            <button class="spin-btn compact" id="confirmTradeBtn" type="button">Exchange</button>
+          </div>
+          <p class="trade-hint" id="tradeHint"></p>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <dialog class="modal" id="cashOutModal">
+    <form method="dialog" class="modal-card">
+      <h3>💵 USD → Markkade</h3>
+      <p>Convert USD into Markkade at <strong>1 USD = 1 MKD</strong>.</p>
+      <label>
+        Amount (USD)
+        <input id="cashOutAmount" type="number" min="1" step="0.01" />
+      </label>
+      <div class="modal-actions">
+        <button value="cancel" class="ghost-btn" type="submit">Cancel</button>
+        <button id="confirmCashOut" class="spin-btn compact" value="default" type="submit">Convert</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="game.js"></script>
+</body>
+</html>
