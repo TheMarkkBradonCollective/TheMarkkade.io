@@ -183,18 +183,28 @@ Future Markkade games will share:
 
 ---
 
-# Play
+# Play (Vite)
+
+This project is a **Vite** JavaScript multi-page app.
 
 | Page | Path |
 |------|------|
-| Markkade hub | [`index.html`](index.html) |
-| Markk'd Bills | [`games/markkdbills/`](games/markkdbills/) |
-| Founder Live Ops | [`founder/`](founder/) |
+| Markkade hub | `/` |
+| Markk'd Bills | `/games/markkdbills/` |
+| Founder Live Ops | `/founder/` |
 
 ```bash
-python3 -m http.server 8080
+npm install
+npm run dev
 ```
 
-Open `http://localhost:8080` then launch **Markk'd Bills**.
+Open the local Vite URL (default `http://localhost:5173`), then launch **Markk'd Bills**.
+
+```bash
+npm run build    # output in dist/
+npm run preview  # preview production build
+```
+
+Source lives under `src/` as ES modules (`src/economy.js`, `src/founder/main.js`, `src/games/markkdbills/main.js`).
 
 Players request access, wait for founder approval, then receive **$10,000 USD**. Progress is saved in the browser (`localStorage`).

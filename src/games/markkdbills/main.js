@@ -1,11 +1,11 @@
-(() => {
-  "use strict";
+import { MarkkadeEconomy } from "../../economy.js";
+import "../../styles/markkdbills.css";
 
   const STORAGE_KEY = "markkdbills_v1";
   const MARKET_DURATION_MS = 5 * 60 * 1000; // 05:00 as documented
   const OPEN_ROUTE_COUNT = 12;
   const REEL_COUNT = 5;
-  const APPROVAL_GRANT_USD = window.MarkkadeEconomy?.PLAYER_APPROVAL_GRANT_USD || 10_000;
+  const APPROVAL_GRANT_USD = MarkkadeEconomy.PLAYER_APPROVAL_GRANT_USD || 10_000;
 
   /** @typedef {{ code: string, symbol: string, name: string, usdRate: number, weight: number, decimals: number }} Currency */
 
@@ -75,15 +75,14 @@
   }
 
   function guardFounder() {
-    if (!window.MarkkadeEconomy) return false;
-    if (window.MarkkadeEconomy.isFounder()) {
+    if (MarkkadeEconomy.isFounder()) {
       const block = document.getElementById("founderBlock");
       if (block) block.hidden = false;
       const logoutBtn = document.getElementById("founderLogoutBtn");
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
-          window.MarkkadeEconomy.logout();
-          location.href = "../../founder/";
+          MarkkadeEconomy.logout();
+          location.href = "/founder/";
         });
       }
       return true;
@@ -140,8 +139,8 @@
 
   function watchApproval(session) {
     if (accessUnsub) accessUnsub();
-    accessUnsub = window.MarkkadeEconomy.subscribe(() => {
-      const player = window.MarkkadeEconomy.getPlayer(session.playerId);
+    accessUnsub = MarkkadeEconomy.subscribe(() => {
+      const player = MarkkadeEconomy.getPlayer(session.playerId);
       if (!player) return;
       if (player.status === "approved" && player.starterFunded) {
         hideAccess();
@@ -157,7 +156,7 @@
   }
 
   function ensurePlayerSession() {
-    const result = window.MarkkadeEconomy.requirePlayerForGames();
+    const result = MarkkadeEconomy.requirePlayerForGames();
     if (result.founder && result.redirect) {
       location.href = result.redirect;
       return null;
@@ -527,7 +526,7 @@
     state.wallet.USD -= bet;
     // Player loss / wager is added to the founder house bank
     if (playerSession?.playerId) {
-      window.MarkkadeEconomy.recordWager({
+      MarkkadeEconomy.recordWager({
         playerId: playerSession.playerId,
         game: "markkdbills",
         amountUsd: bet,
@@ -556,7 +555,7 @@
       const payoutUsd = economyUsdValue(match.code, payout);
       // Winnings are paid FROM the founder house bank
       if (playerSession?.playerId) {
-        window.MarkkadeEconomy.recordPayout({
+        MarkkadeEconomy.recordPayout({
           playerId: playerSession.playerId,
           game: "markkdbills",
           amountUsd: payoutUsd,
@@ -613,7 +612,7 @@
     state.wallet.USD -= amount;
     state.markkade += amount; // 1 USD = 1 MKD
     if (playerSession?.playerId) {
-      window.MarkkadeEconomy.recordCashOut({
+      MarkkadeEconomy.recordCashOut({
         playerId: playerSession.playerId,
         amountUsd: amount,
       });
@@ -678,7 +677,7 @@
         showToast("Enter a player name to request approval.");
         return;
       }
-      const result = window.MarkkadeEconomy.loginPlayer(name);
+      const result = MarkkadeEconomy.loginPlayer(name);
       if (!result.ok) {
         showToast(result.error || "Could not register.");
         return;
@@ -689,7 +688,7 @@
       saveState();
       renderBalances();
       renderWallet();
-      showAccess("pending", window.MarkkadeEconomy.getPlayer(result.session.playerId));
+      showAccess("pending", MarkkadeEconomy.getPlayer(result.session.playerId));
       watchApproval(result.session);
     });
   }
@@ -703,4 +702,4 @@
   }
 
   init();
-})();
+

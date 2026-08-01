@@ -2,8 +2,7 @@
  * Markkade shared economy — founder house bank + live activity ledger.
  * Player winnings are paid FROM the house bank. Player losses are added TO it.
  */
-(function (global) {
-  "use strict";
+
 
   const STORAGE_KEY = "markkade_economy_v1";
   const SESSION_KEY = "markkade_session_v1";
@@ -470,7 +469,7 @@
       return {
         ok: false,
         error: "Founder cannot play games. Live watch only.",
-        redirect: "../../founder/",
+        redirect: "/founder/",
         founder: true,
       };
     }
@@ -560,28 +559,29 @@
     });
   }
 
-  global.MarkkadeEconomy = {
-    FOUNDER_STARTING_BANK,
-    PLAYER_APPROVAL_GRANT_USD,
-    FOUNDER_USER,
-    loadEconomy,
-    getSnapshot,
-    subscribe,
-    ensurePlayer,
-    getPlayer,
-    isPlayerApproved,
-    approvePlayer,
-    rejectPlayer,
-    getOrCreateLocalPlayerId,
-    recordWager,
-    recordPayout,
-    recordCashOut,
-    loginFounder,
-    loginPlayer,
-    logout,
-    getSession,
-    isFounder,
-    requirePlayerForGames,
-    formatUsd,
-  };
-})(window);
+export const MarkkadeEconomy = {
+  FOUNDER_STARTING_BANK,
+  PLAYER_APPROVAL_GRANT_USD,
+  FOUNDER_USER,
+  loadEconomy,
+  getSnapshot,
+  subscribe,
+  ensurePlayer,
+  getPlayer,
+  isPlayerApproved,
+  approvePlayer,
+  rejectPlayer,
+  getOrCreateLocalPlayerId,
+  recordWager,
+  recordPayout,
+  recordCashOut,
+  loginFounder,
+  loginPlayer,
+  logout,
+  getSession,
+  isFounder,
+  requirePlayerForGames,
+  formatUsd,
+};
+
+export default MarkkadeEconomy;

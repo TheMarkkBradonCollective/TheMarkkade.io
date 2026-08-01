@@ -8,13 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="fx-layer" aria-hidden="true"></div>
 
   <header class="topbar">
-    <a class="back" href="../../">← Markkade</a>
+    <a class="back" href="/">← Markkade</a>
     <div class="topbar-brand">
       <span class="brand-name">Markk'd Bills</span>
       <span class="brand-sub">5-Slot Currency Machine</span>
@@ -117,7 +116,7 @@
     <div class="founder-block-card">
       <h2>Founder watch mode only</h2>
       <p>The founder account cannot play games. Open Live Ops to watch scores and charts.</p>
-      <a class="spin-btn compact" href="../../founder/">Open Founder Live Ops</a>
+      <a class="spin-btn compact" href="/founder/">Open Founder Live Ops</a>
       <button class="ghost-btn" id="founderLogoutBtn" type="button">Log out founder</button>
     </div>
   </div>
@@ -137,11 +136,10 @@
         <p class="pending-pulse">⏳ Waiting for founder approval…</p>
         <p class="trade-hint" id="pendingName"></p>
       </div>
-      <a class="text-btn" href="../../">← Back to Markkade</a>
+      <a class="text-btn" href="/">← Back to Markkade</a>
     </div>
   </div>
 
-  <script src="../../js/economy.js"></script>
-  <script src="game.js"></script>
+  <script type="module" src="/src/games/markkdbills/main.js"></script>
 </body>
 </html>

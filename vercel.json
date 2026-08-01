@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/founder", "destination": "/founder/index.html" },
     { "source": "/games/markkdbills", "destination": "/games/markkdbills/index.html" }
   ]
 }

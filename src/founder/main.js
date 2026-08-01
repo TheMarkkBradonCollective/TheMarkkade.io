@@ -1,5 +1,6 @@
-(() => {
-  "use strict";
+import Chart from "chart.js/auto";
+import { MarkkadeEconomy } from "../economy.js";
+import "../styles/founder.css";
 
   const loginView = document.getElementById("loginView");
   const dashView = document.getElementById("dashView");
@@ -96,7 +97,7 @@
   }
 
   function render(snapshot) {
-    const { formatUsd } = window.MarkkadeEconomy;
+    const { formatUsd } = MarkkadeEconomy;
     document.getElementById("houseBank").textContent = formatUsd(snapshot.houseBankUsd);
     const delta = snapshot.netHouseEdgeUsd;
     const foot = document.getElementById("houseDelta");
@@ -131,13 +132,13 @@
         .join("");
       pendingBody.querySelectorAll("[data-approve]").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const result = window.MarkkadeEconomy.approvePlayer(btn.getAttribute("data-approve"));
+          const result = MarkkadeEconomy.approvePlayer(btn.getAttribute("data-approve"));
           if (!result.ok) alert(result.error || "Approve failed");
         });
       });
       pendingBody.querySelectorAll("[data-reject]").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const result = window.MarkkadeEconomy.rejectPlayer(btn.getAttribute("data-reject"));
+          const result = MarkkadeEconomy.rejectPlayer(btn.getAttribute("data-reject"));
           if (!result.ok) alert(result.error || "Reject failed");
         });
       });
@@ -205,7 +206,7 @@
   function startLive() {
     if (!bankChart) initCharts();
     if (unsub) unsub();
-    unsub = window.MarkkadeEconomy.subscribe(render);
+    unsub = MarkkadeEconomy.subscribe(render);
   }
 
   loginForm.addEventListener("submit", (e) => {
@@ -218,7 +219,7 @@
       loginError.textContent = "Enter founder username and password.";
       return;
     }
-    const result = window.MarkkadeEconomy.loginFounder(username, password);
+    const result = MarkkadeEconomy.loginFounder(username, password);
     if (!result.ok) {
       loginError.hidden = false;
       loginError.textContent = result.error || "Login failed";
@@ -228,12 +229,12 @@
   });
 
   logoutBtn.addEventListener("click", () => {
-    window.MarkkadeEconomy.logout();
+    MarkkadeEconomy.logout();
     showLogin();
   });
 
   function boot() {
-    const session = window.MarkkadeEconomy.getSession();
+    const session = MarkkadeEconomy.getSession();
     if (session?.role === "founder") showDash();
     else showLogin();
   }
@@ -243,4 +244,4 @@
   } else {
     boot();
   }
-})();
+
