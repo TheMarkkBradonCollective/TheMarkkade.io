@@ -183,28 +183,32 @@ Future Markkade games will share:
 
 ---
 
-# Play (Vite)
+# Play (Next.js + Supabase)
 
-This project is a **Vite** JavaScript multi-page app.
+This project is a **Next.js** App Router app with **Supabase** auth/session helpers.
 
 | Page | Path |
 |------|------|
 | Markkade hub | `/` |
-| Markk'd Bills | `/games/markkdbills/` |
-| Founder Live Ops | `/founder/` |
+| Markk'd Bills | `/games/markkdbills` |
+| Founder Live Ops | `/founder` |
+| Supabase todos sample | `/todos` |
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local Vite URL (default `http://localhost:5173`), then launch **Markk'd Bills**.
+Copy `.env.example` to `.env.local` and set:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
 ```bash
-npm run build    # output in dist/
-npm run preview  # preview production build
+npm run build
+npm start
 ```
 
-Source lives under `src/` as ES modules (`src/economy.js`, `src/founder/main.js`, `src/games/markkdbills/main.js`).
+Supabase helpers live in `utils/supabase/` (`client.ts`, `server.ts`, `middleware.ts`). Root `middleware.ts` refreshes sessions.
 
 Players request access, wait for founder approval, then receive **$10,000 USD**. Progress is saved in the browser (`localStorage`).
