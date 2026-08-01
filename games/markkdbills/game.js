@@ -3,9 +3,9 @@
 
   const STORAGE_KEY = "markkdbills_v1";
   const MARKET_DURATION_MS = 5 * 60 * 1000; // 05:00 as documented
-  const STARTING_USD = 500;
   const OPEN_ROUTE_COUNT = 12;
   const REEL_COUNT = 5;
+  const APPROVAL_GRANT_USD = window.MarkkadeEconomy?.PLAYER_APPROVAL_GRANT_USD || 10_000;
 
   /** @typedef {{ code: string, symbol: string, name: string, usdRate: number, weight: number, decimals: number }} Currency */
 
@@ -65,6 +65,8 @@
   let selectedRoute = null;
   let toastTimer = null;
   let playerSession = null;
+  let accessUnsub = null;
+  let gameReady = false;
 
   function economyUsdValue(code, amount) {
     const c = byCode[code];
@@ -89,19 +91,100 @@
     return false;
   }
 
+  function showAccess(mode, player) {
+    const block = document.getElementById("accessBlock");
+    const form = document.getElementById("registerForm");
+    const pending = document.getElementById("pendingWait");
+    const title = document.getElementById("accessTitle");
+    const copy = document.getElementById("accessCopy");
+    const pendingName = document.getElementById("pendingName");
+    block.hidden = false;
+    if (mode === "register") {
+      title.textContent = "Request access";
+      copy.innerHTML =
+        "The founder must approve you. Approved players receive <strong>$10,000</strong> from the house bank.";
+      form.hidden = false;
+      pending.hidden = true;
+    } else if (mode === "rejected") {
+      title.textContent = "Access rejected";
+      copy.textContent = "The founder rejected this player request.";
+      form.hidden = true;
+      pending.hidden = true;
+    } else {
+      title.textContent = "Awaiting approval";
+      copy.innerHTML =
+        "Hang tight — once the founder approves you, <strong>$10,000</strong> is paid from the house bank and you can play.";
+      form.hidden = true;
+      pending.hidden = false;
+      pendingName.textContent = player?.name ? `Signed in as ${player.name}` : "";
+    }
+  }
+
+  function hideAccess() {
+    const block = document.getElementById("accessBlock");
+    if (block) block.hidden = true;
+  }
+
+  function applyApprovalGrant(player) {
+    if (!player || state.approvalFunded) return false;
+    const grant = Number(player.startingUsd) || APPROVAL_GRANT_USD;
+    // First approval credit is exactly the founder grant.
+    state.wallet.USD = grant;
+    state.approvalFunded = true;
+    saveState();
+    renderBalances();
+    renderWallet();
+    showToast(`✅ Approved!\n$${grant.toLocaleString()} added to your wallet`);
+    return true;
+  }
+
+  function watchApproval(session) {
+    if (accessUnsub) accessUnsub();
+    accessUnsub = window.MarkkadeEconomy.subscribe(() => {
+      const player = window.MarkkadeEconomy.getPlayer(session.playerId);
+      if (!player) return;
+      if (player.status === "approved" && player.starterFunded) {
+        hideAccess();
+        playerSession = session;
+        applyApprovalGrant(player);
+        if (!gameReady) startGame();
+      } else if (player.status === "rejected") {
+        showAccess("rejected", player);
+      } else {
+        showAccess("pending", player);
+      }
+    });
+  }
+
   function ensurePlayerSession() {
     const result = window.MarkkadeEconomy.requirePlayerForGames();
+    if (result.founder && result.redirect) {
+      location.href = result.redirect;
+      return null;
+    }
+    if (result.needsRegistration) {
+      showAccess("register");
+      return null;
+    }
+    if (result.pendingApproval || result.rejected) {
+      playerSession = result.session;
+      showAccess(result.rejected ? "rejected" : "pending", result.player);
+      watchApproval(result.session);
+      return null;
+    }
     if (!result.ok) {
-      if (result.redirect) location.href = result.redirect;
+      showAccess("register");
       return null;
     }
     playerSession = result.session;
+    hideAccess();
+    applyApprovalGrant(result.player);
     return playerSession;
   }
 
   function defaultWallet() {
     const wallet = Object.fromEntries(CURRENCIES.map((c) => [c.code, 0]));
-    wallet.USD = STARTING_USD;
+    wallet.USD = 0;
     return wallet;
   }
 
@@ -117,6 +200,7 @@
       return {
         wallet,
         markkade: Number(parsed.markkade) || 0,
+        approvalFunded: Boolean(parsed.approvalFunded),
         market: {
           open: Array.isArray(parsed.market?.open) ? parsed.market.open : [],
           endsAt: Number(parsed.market?.endsAt) || 0,
@@ -132,6 +216,7 @@
     return {
       wallet: defaultWallet(),
       markkade: 0,
+      approvalFunded: false,
       market: {
         open: [],
         endsAt: 0,
@@ -146,6 +231,7 @@
       JSON.stringify({
         wallet: state.wallet,
         markkade: state.markkade,
+        approvalFunded: Boolean(state.approvalFunded),
         market: state.market,
       })
     );
@@ -566,9 +652,9 @@
     els.reels.forEach((reel, i) => setReelSymbol(reel, starter[i]));
   }
 
-  function init() {
-    if (guardFounder()) return;
-    ensurePlayerSession();
+  function startGame() {
+    if (gameReady) return;
+    gameReady = true;
     bindEvents();
     initReels();
     renderBalances();
@@ -580,6 +666,40 @@
     }
     updateTimer();
     setInterval(updateTimer, 250);
+  }
+
+  function bindAccessForm() {
+    const form = document.getElementById("registerForm");
+    if (!form) return;
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("playerNameInput").value.trim();
+      if (!name) {
+        showToast("Enter a player name to request approval.");
+        return;
+      }
+      const result = window.MarkkadeEconomy.loginPlayer(name);
+      if (!result.ok) {
+        showToast(result.error || "Could not register.");
+        return;
+      }
+      playerSession = result.session;
+      // Reset local wallet until founder approves this player.
+      state = createFreshState();
+      saveState();
+      renderBalances();
+      renderWallet();
+      showAccess("pending", window.MarkkadeEconomy.getPlayer(result.session.playerId));
+      watchApproval(result.session);
+    });
+  }
+
+  function init() {
+    if (guardFounder()) return;
+    bindAccessForm();
+    const session = ensurePlayerSession();
+    if (!session) return;
+    startGame();
   }
 
   init();

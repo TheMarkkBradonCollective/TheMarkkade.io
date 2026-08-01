@@ -333,6 +333,40 @@ td:nth-child(5) {
   text-align: center;
 }
 
+.approvals-panel {
+  margin-bottom: 0.85rem;
+  border-color: rgba(226, 182, 87, 0.35);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.approve-btn,
+.reject-btn {
+  min-height: 34px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.approve-btn {
+  color: #08110c;
+  background: linear-gradient(135deg, var(--neon), var(--gold));
+}
+
+.reject-btn {
+  color: var(--ink);
+  background: rgba(255, 107, 122, 0.16);
+  border: 1px solid rgba(255, 107, 122, 0.35);
+}
+
 @media (max-width: 900px) {
   .stat-grid,
   .charts,

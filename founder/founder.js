@@ -110,12 +110,46 @@
     document.getElementById("totalPaid").textContent = formatUsd(snapshot.totalPaidOutUsd);
     document.getElementById("activePlayers").textContent = String(snapshot.activePlayers);
 
-    document.getElementById("scoreMeta").textContent = `${snapshot.scores.length} players`;
-    const body = document.getElementById("scoreBody");
-    if (!snapshot.scores.length) {
-      body.innerHTML = `<tr><td colspan="5">No player scores yet — waiting for live play…</td></tr>`;
+    const pending = snapshot.pendingPlayers || [];
+    document.getElementById("pendingMeta").textContent =
+      `${pending.length} waiting · ${formatUsd(snapshot.approvalGrantUsd || 10000)} grant each`;
+    const pendingBody = document.getElementById("pendingBody");
+    if (!pending.length) {
+      pendingBody.innerHTML = `<tr><td colspan="3">No players waiting for approval.</td></tr>`;
     } else {
-      body.innerHTML = snapshot.scores
+      pendingBody.innerHTML = pending
+        .map(
+          (p) => `<tr data-player-id="${escapeHtml(p.id)}">
+            <td>${escapeHtml(p.name)}</td>
+            <td>${new Date(p.createdAt).toLocaleString()}</td>
+            <td class="actions">
+              <button type="button" class="approve-btn" data-approve="${escapeHtml(p.id)}">Approve $10,000</button>
+              <button type="button" class="reject-btn" data-reject="${escapeHtml(p.id)}">Reject</button>
+            </td>
+          </tr>`
+        )
+        .join("");
+      pendingBody.querySelectorAll("[data-approve]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const result = window.MarkkadeEconomy.approvePlayer(btn.getAttribute("data-approve"));
+          if (!result.ok) alert(result.error || "Approve failed");
+        });
+      });
+      pendingBody.querySelectorAll("[data-reject]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const result = window.MarkkadeEconomy.rejectPlayer(btn.getAttribute("data-reject"));
+          if (!result.ok) alert(result.error || "Reject failed");
+        });
+      });
+    }
+
+    const approvedScores = (snapshot.scores || []).filter((s) => s.status !== "pending" && s.status !== "rejected");
+    document.getElementById("scoreMeta").textContent = `${approvedScores.length} approved players`;
+    const body = document.getElementById("scoreBody");
+    if (!approvedScores.length) {
+      body.innerHTML = `<tr><td colspan="5">No approved players yet — approve someone to start play…</td></tr>`;
+    } else {
+      body.innerHTML = approvedScores
         .slice(0, 25)
         .map(
           (s, i) => `<tr>

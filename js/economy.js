@@ -12,7 +12,8 @@
   const FOUNDER_STARTING_BANK = 100_000_000_000;
   const MAX_EVENTS = 400;
   const MAX_BANK_HISTORY = 240;
-  const PLAYER_STARTING_USD = 500;
+  /** USD granted only after founder approval */
+  const PLAYER_APPROVAL_GRANT_USD = 10_000;
 
   // Demo founder credentials (client-side gate for the watch dashboard).
   // Username is case-insensitive. Change before any public launch.
@@ -122,24 +123,44 @@
     else sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
 
+  function normalizePlayer(player) {
+    if (!player) return player;
+    // Migrate legacy auto-funded players as already approved.
+    if (!player.status) {
+      player.status = player.starterFunded ? "approved" : "pending";
+    }
+    return player;
+  }
+
+  function getPlayer(playerId) {
+    const economy = loadEconomy();
+    return normalizePlayer(economy.players[playerId] || null);
+  }
+
+  function isPlayerApproved(playerId) {
+    const player = getPlayer(playerId);
+    return Boolean(player && player.status === "approved" && player.starterFunded);
+  }
+
+  /**
+   * Register / touch a player. New players start PENDING — no funds until founder approves.
+   */
   function ensurePlayer(playerId, displayName) {
     const economy = loadEconomy();
     if (!economy.players[playerId]) {
-      const starter = Math.min(PLAYER_STARTING_USD, economy.houseBankUsd);
-      economy.houseBankUsd -= starter;
-      economy.totalPaidOutUsd += starter;
-
       economy.players[playerId] = {
         id: playerId,
         name: displayName || `Player-${playerId.slice(-4)}`,
         createdAt: now(),
         lastSeenAt: now(),
-        startingUsd: starter,
-        starterFunded: true,
+        status: "pending",
+        startingUsd: 0,
+        starterFunded: false,
+        approvedAt: null,
         wageredUsd: 0,
-        wonUsd: starter,
+        wonUsd: 0,
         lostUsd: 0,
-        netUsd: starter,
+        netUsd: 0,
         spins: 0,
         games: { markkdbills: { spins: 0, wins: 0, score: 0 } },
       };
@@ -149,21 +170,22 @@
         score: 0,
         spins: 0,
         wins: 0,
+        status: "pending",
         updatedAt: now(),
       };
-      pushHistory(economy);
       pushEvent(economy, {
         id: uid("evt"),
         type: "player_join",
         at: now(),
-        message: `${economy.players[playerId].name} joined — starter $${starter.toFixed(2)} paid from house bank`,
-        amountUsd: starter,
+        message: `${economy.players[playerId].name} requested access — awaiting founder approval`,
+        amountUsd: 0,
         playerId,
         game: null,
-        meta: { houseBankUsd: economy.houseBankUsd },
+        meta: { status: "pending" },
       });
       saveEconomy(economy);
     } else {
+      normalizePlayer(economy.players[playerId]);
       economy.players[playerId].lastSeenAt = now();
       if (displayName) {
         economy.players[playerId].name = displayName;
@@ -172,6 +194,94 @@
       saveEconomy(economy, false);
     }
     return economy.players[playerId];
+  }
+
+  /**
+   * Founder approves a pending player and pays $10,000 from the house bank.
+   */
+  function approvePlayer(playerId) {
+    if (!isFounder()) {
+      return { ok: false, error: "Only the founder can approve players." };
+    }
+    const economy = loadEconomy();
+    const player = normalizePlayer(economy.players[playerId]);
+    if (!player) return { ok: false, error: "Player not found." };
+    if (player.status === "approved" && player.starterFunded) {
+      return { ok: true, already: true, player, grantUsd: player.startingUsd || PLAYER_APPROVAL_GRANT_USD };
+    }
+
+    const grant = Math.min(PLAYER_APPROVAL_GRANT_USD, economy.houseBankUsd);
+    if (grant < PLAYER_APPROVAL_GRANT_USD) {
+      return { ok: false, error: "House bank cannot fund a full $10,000 approval grant." };
+    }
+
+    economy.houseBankUsd -= grant;
+    economy.totalPaidOutUsd += grant;
+    player.status = "approved";
+    player.approvedAt = now();
+    player.startingUsd = grant;
+    player.starterFunded = true;
+    player.lastSeenAt = now();
+    player.netUsd = (player.netUsd || 0) + grant;
+
+    if (economy.scores[playerId]) {
+      economy.scores[playerId].status = "approved";
+      economy.scores[playerId].updatedAt = now();
+    } else {
+      economy.scores[playerId] = {
+        playerId,
+        name: player.name,
+        score: 0,
+        spins: 0,
+        wins: 0,
+        status: "approved",
+        updatedAt: now(),
+      };
+    }
+
+    pushHistory(economy);
+    pushEvent(economy, {
+      id: uid("evt"),
+      type: "player_approved",
+      at: now(),
+      message: `Founder approved ${player.name} — $${grant.toLocaleString()} granted from house bank`,
+      amountUsd: grant,
+      playerId,
+      game: null,
+      meta: { houseBankUsd: economy.houseBankUsd, status: "approved" },
+    });
+    saveEconomy(economy);
+    return { ok: true, player, grantUsd: grant };
+  }
+
+  function rejectPlayer(playerId) {
+    if (!isFounder()) {
+      return { ok: false, error: "Only the founder can reject players." };
+    }
+    const economy = loadEconomy();
+    const player = normalizePlayer(economy.players[playerId]);
+    if (!player) return { ok: false, error: "Player not found." };
+    if (player.status === "approved" && player.starterFunded) {
+      return { ok: false, error: "Player already approved and funded." };
+    }
+    player.status = "rejected";
+    player.lastSeenAt = now();
+    if (economy.scores[playerId]) {
+      economy.scores[playerId].status = "rejected";
+      economy.scores[playerId].updatedAt = now();
+    }
+    pushEvent(economy, {
+      id: uid("evt"),
+      type: "player_rejected",
+      at: now(),
+      message: `Founder rejected ${player.name}`,
+      amountUsd: 0,
+      playerId,
+      game: null,
+      meta: { status: "rejected" },
+    });
+    saveEconomy(economy);
+    return { ok: true, player };
   }
 
   function getOrCreateLocalPlayerId() {
@@ -190,11 +300,12 @@
    */
   function recordWager({ playerId, game, amountUsd, meta = {} }) {
     const amount = Math.max(0, Number(amountUsd) || 0);
-    const economy = loadEconomy();
-    const player = economy.players[playerId] || ensurePlayer(playerId);
-    // ensurePlayer may have saved; reload
+    if (!isPlayerApproved(playerId)) {
+      return { ok: false, error: "Player is not approved to play." };
+    }
     const eco = loadEconomy();
-    const p = eco.players[playerId] || player;
+    const p = normalizePlayer(eco.players[playerId]);
+    if (!p) return { ok: false, error: "Player not found." };
 
     eco.houseBankUsd += amount;
     eco.totalWageredUsd += amount;
@@ -226,7 +337,7 @@
       meta: { ...meta, houseBankUsd: eco.houseBankUsd },
     });
     saveEconomy(eco);
-    return eco;
+    return { ok: true, economy: eco };
   }
 
   /**
@@ -235,10 +346,12 @@
    */
   function recordPayout({ playerId, game, amountUsd, meta = {} }) {
     let amount = Math.max(0, Number(amountUsd) || 0);
-    const eco = loadEconomy();
-    const p = eco.players[playerId] || ensurePlayer(playerId);
+    if (!isPlayerApproved(playerId)) {
+      return { ok: false, paidUsd: 0, error: "Player is not approved to play." };
+    }
     const economy = loadEconomy();
-    const player = economy.players[playerId] || p;
+    const player = normalizePlayer(economy.players[playerId]);
+    if (!player) return { ok: false, paidUsd: 0, error: "Player not found." };
 
     if (amount > economy.houseBankUsd) {
       amount = Math.max(0, economy.houseBankUsd);
@@ -274,7 +387,7 @@
       meta: { ...meta, houseBankUsd: economy.houseBankUsd },
     });
     saveEconomy(economy);
-    return { economy, paidUsd: amount };
+    return { ok: true, economy, paidUsd: amount };
   }
 
   function recordCashOut({ playerId, amountUsd, meta = {} }) {
@@ -358,36 +471,63 @@
         ok: false,
         error: "Founder cannot play games. Live watch only.",
         redirect: "../../founder/",
+        founder: true,
       };
     }
     const session = getSession();
     if (!session || session.role !== "player") {
-      const playerId = getOrCreateLocalPlayerId();
-      return loginPlayer(`Player-${playerId.slice(-4)}`);
+      return {
+        ok: false,
+        needsRegistration: true,
+        error: "Register a player name to request founder approval.",
+      };
     }
-    ensurePlayer(session.playerId, session.name);
-    return { ok: true, session };
+    const player = ensurePlayer(session.playerId, session.name);
+    if (player.status !== "approved" || !player.starterFunded) {
+      return {
+        ok: false,
+        pendingApproval: true,
+        rejected: player.status === "rejected",
+        session,
+        player,
+        error:
+          player.status === "rejected"
+            ? "Your access request was rejected by the founder."
+            : "Waiting for founder approval. Approved players receive $10,000.",
+      };
+    }
+    return { ok: true, session, player };
   }
 
   function getSnapshot() {
     const economy = loadEconomy();
+    const players = Object.values(economy.players || {}).map(normalizePlayer);
     const scores = Object.values(economy.scores || {}).sort((a, b) => b.score - a.score);
     const recent = (economy.events || []).slice(0, 50);
     const activeCutoff = now() - 5 * 60 * 1000;
-    const activePlayers = Object.values(economy.players || {}).filter((p) => p.lastSeenAt >= activeCutoff);
+    const activePlayers = players.filter((p) => p.status === "approved" && p.lastSeenAt >= activeCutoff);
+    const pendingPlayers = players
+      .filter((p) => p.status === "pending")
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    const approvedPlayers = players.filter((p) => p.status === "approved");
     return {
       houseBankUsd: economy.houseBankUsd,
       startingBankUsd: FOUNDER_STARTING_BANK,
+      approvalGrantUsd: PLAYER_APPROVAL_GRANT_USD,
       totalWageredUsd: economy.totalWageredUsd,
       totalPaidOutUsd: economy.totalPaidOutUsd,
       totalPlayerLossesUsd: economy.totalPlayerLossesUsd,
       netHouseEdgeUsd: economy.houseBankUsd - FOUNDER_STARTING_BANK,
-      playerCount: Object.keys(economy.players || {}).length,
+      playerCount: players.length,
+      pendingCount: pendingPlayers.length,
+      approvedCount: approvedPlayers.length,
       activePlayers: activePlayers.length,
+      pendingPlayers,
+      approvedPlayers,
       scores,
       recent,
       bankHistory: economy.bankHistory || [],
-      players: Object.values(economy.players || {}),
+      players,
     };
   }
 
@@ -422,12 +562,16 @@
 
   global.MarkkadeEconomy = {
     FOUNDER_STARTING_BANK,
-    PLAYER_STARTING_USD,
+    PLAYER_APPROVAL_GRANT_USD,
     FOUNDER_USER,
     loadEconomy,
     getSnapshot,
     subscribe,
     ensurePlayer,
+    getPlayer,
+    isPlayerApproved,
+    approvePlayer,
+    rejectPlayer,
     getOrCreateLocalPlayerId,
     recordWager,
     recordPayout,

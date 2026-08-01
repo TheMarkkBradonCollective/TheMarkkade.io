@@ -686,3 +686,37 @@ body {
   color: var(--muted);
   line-height: 1.45;
 }
+
+.access-form {
+  display: grid;
+  gap: 0.65rem;
+  text-align: left;
+}
+
+.access-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.access-form input {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #0d121a;
+  color: var(--ink);
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.pending-pulse {
+  color: var(--gold) !important;
+  font-weight: 700;
+  animation: pendingPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pendingPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}

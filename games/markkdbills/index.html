@@ -22,7 +22,7 @@
     <div class="top-balances">
       <div class="pill" title="USD for spins">
         <span class="pill-label">USD</span>
-        <strong id="usdBalance">$500.00</strong>
+        <strong id="usdBalance">$0.00</strong>
       </div>
       <div class="pill pill-markkade" title="Markkade balance">
         <span class="pill-label">MKD</span>
@@ -119,6 +119,25 @@
       <p>The founder account cannot play games. Open Live Ops to watch scores and charts.</p>
       <a class="spin-btn compact" href="../../founder/">Open Founder Live Ops</a>
       <button class="ghost-btn" id="founderLogoutBtn" type="button">Log out founder</button>
+    </div>
+  </div>
+
+  <div class="founder-block" id="accessBlock" hidden>
+    <div class="founder-block-card" id="accessCard">
+      <h2 id="accessTitle">Request access</h2>
+      <p id="accessCopy">The founder must approve you. Approved players receive <strong>$10,000</strong> from the house bank.</p>
+      <form id="registerForm" class="access-form">
+        <label>
+          Player name
+          <input id="playerNameInput" name="playerName" maxlength="24" placeholder="Your display name" autocomplete="nickname" />
+        </label>
+        <button class="spin-btn compact" type="submit">Request Approval</button>
+      </form>
+      <div id="pendingWait" hidden>
+        <p class="pending-pulse">⏳ Waiting for founder approval…</p>
+        <p class="trade-hint" id="pendingName"></p>
+      </div>
+      <a class="text-btn" href="../../">← Back to Markkade</a>
     </div>
   </div>
 
