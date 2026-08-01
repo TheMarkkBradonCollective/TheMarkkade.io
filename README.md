@@ -189,10 +189,18 @@ This project is a **Next.js** App Router app with **Supabase** auth/session help
 
 | Page | Path |
 |------|------|
-| Markkade hub | `/` |
+| Markkade slots lobby (responsive dashboard) | `/` |
 | Markk'd Bills | `/games/markkdbills` |
 | Founder Live Ops | `/founder` |
 | Supabase todos sample | `/todos` |
+
+The home lobby mimics a full slots website shell:
+
+- **Mobile** — bottom dock, stacked hero / list / tournaments / finance
+- **Tablet** — dual-pane content + coming soon / popular
+- **Desktop** — 3-column shell (nav · lobby · balance/finance)
+
+Brand accents are **green + yellow** on dark panels.
 
 ```bash
 npm install
