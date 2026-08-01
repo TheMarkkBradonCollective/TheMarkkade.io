@@ -82,7 +82,10 @@
         <p class="exchange-meta" id="exchangeMeta">12 Available · 8 Locked</p>
         <div class="routes" id="routes"></div>
         <div class="trade-box" id="tradeBox" hidden>
-          <p class="trade-title" id="tradeTitle">Trade</p>
+          <div class="panel-head">
+            <p class="trade-title" id="tradeTitle">Trade</p>
+            <button class="text-btn" id="cancelTradeBtn" type="button">Close</button>
+          </div>
           <div class="trade-row">
             <input id="tradeAmount" type="number" min="0" step="any" placeholder="Amount" />
             <button class="spin-btn compact" id="confirmTradeBtn" type="button">Exchange</button>

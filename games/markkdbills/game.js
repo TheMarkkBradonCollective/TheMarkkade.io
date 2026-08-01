@@ -50,6 +50,7 @@
     tradeAmount: document.getElementById("tradeAmount"),
     tradeHint: document.getElementById("tradeHint"),
     confirmTradeBtn: document.getElementById("confirmTradeBtn"),
+    cancelTradeBtn: document.getElementById("cancelTradeBtn"),
     cashOutBtn: document.getElementById("cashOutBtn"),
     cashOutModal: document.getElementById("cashOutModal"),
     cashOutAmount: document.getElementById("cashOutAmount"),
@@ -188,16 +189,14 @@
   }
 
   function renderWallet() {
-    const ordered = [...CURRENCIES].sort((a, b) => {
-      const av = state.wallet[a.code] || 0;
-      const bv = state.wallet[b.code] || 0;
-      if (av === 0 && bv === 0) return a.code.localeCompare(b.code);
-      if (av === 0) return 1;
-      if (bv === 0) return -1;
-      return bv * b.usdRate - av * a.usdRate;
+    const held = CURRENCIES.filter((c) => c.code === "USD" || (state.wallet[c.code] || 0) > 0);
+    held.sort((a, b) => {
+      const av = (state.wallet[a.code] || 0) * a.usdRate;
+      const bv = (state.wallet[b.code] || 0) * b.usdRate;
+      return bv - av;
     });
 
-    els.walletList.innerHTML = ordered
+    els.walletList.innerHTML = held
       .map((c) => {
         const amt = state.wallet[c.code] || 0;
         return `<li class="${amt > 0 ? "has-balance" : ""}">
@@ -487,6 +486,10 @@
       if (autoSpin && !spinning) spinReels();
     });
     els.confirmTradeBtn.addEventListener("click", executeTrade);
+    els.cancelTradeBtn.addEventListener("click", () => {
+      selectedRoute = null;
+      els.tradeBox.hidden = true;
+    });
     els.cashOutBtn.addEventListener("click", openCashOut);
     els.cashOutModal.addEventListener("submit", confirmCashOut);
     document.addEventListener("keydown", (e) => {
