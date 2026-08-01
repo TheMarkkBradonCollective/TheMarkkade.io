@@ -277,16 +277,18 @@
   function renderExchange() {
     const all = allPossibleRoutes();
     const openSet = new Set(isFlashActive() ? all : state.market.open);
-    const openCount = openSet.size;
-    const lockedCount = all.length - openCount;
-    els.exchangeMeta.textContent = isFlashActive()
-      ? `⚡ FLASH · ${openCount} Available · 0 Locked`
-      : `${Math.min(openCount, OPEN_ROUTE_COUNT)} Available · ${Math.max(lockedCount, 0)} Locked`;
 
-    // Show open routes first, then a sample of locked
-    const openRoutes = (isFlashActive() ? all : state.market.open).slice(0, 16);
+    // Show open routes first, then a sample of locked (matches design UI counts)
+    const openRoutes = (isFlashActive() ? shuffle(all).slice(0, 16) : state.market.open).slice(0, OPEN_ROUTE_COUNT);
     const lockedSample = shuffle(all.filter((r) => !openSet.has(r))).slice(0, 8);
-    const display = [...openRoutes.map((r) => ({ key: r, open: true })), ...lockedSample.map((r) => ({ key: r, open: false }))];
+    const display = [
+      ...openRoutes.map((r) => ({ key: r, open: true })),
+      ...lockedSample.map((r) => ({ key: r, open: false })),
+    ];
+
+    els.exchangeMeta.textContent = isFlashActive()
+      ? `⚡ FLASH · All exchanges unlocked`
+      : `${openRoutes.length} Available · ${lockedSample.length} Locked`;
 
     els.routes.innerHTML = display
       .map(({ key, open }) => {
