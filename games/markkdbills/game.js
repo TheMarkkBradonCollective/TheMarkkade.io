@@ -64,6 +64,40 @@
   let autoSpin = false;
   let selectedRoute = null;
   let toastTimer = null;
+  let playerSession = null;
+
+  function economyUsdValue(code, amount) {
+    const c = byCode[code];
+    if (!c) return 0;
+    return (Number(amount) || 0) * c.usdRate;
+  }
+
+  function guardFounder() {
+    if (!window.MarkkadeEconomy) return false;
+    if (window.MarkkadeEconomy.isFounder()) {
+      const block = document.getElementById("founderBlock");
+      if (block) block.hidden = false;
+      const logoutBtn = document.getElementById("founderLogoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          window.MarkkadeEconomy.logout();
+          location.href = "../../founder/";
+        });
+      }
+      return true;
+    }
+    return false;
+  }
+
+  function ensurePlayerSession() {
+    const result = window.MarkkadeEconomy.requirePlayerForGames();
+    if (!result.ok) {
+      if (result.redirect) location.href = result.redirect;
+      return null;
+    }
+    playerSession = result.session;
+    return playerSession;
+  }
 
   function defaultWallet() {
     const wallet = Object.fromEntries(CURRENCIES.map((c) => [c.code, 0]));
@@ -405,6 +439,15 @@
     setResult("Spinning...", null);
 
     state.wallet.USD -= bet;
+    // Player loss / wager is added to the founder house bank
+    if (playerSession?.playerId) {
+      window.MarkkadeEconomy.recordWager({
+        playerId: playerSession.playerId,
+        game: "markkdbills",
+        amountUsd: bet,
+        meta: { bet },
+      });
+    }
     renderBalances();
     renderWallet();
     saveState();
@@ -424,6 +467,16 @@
     const match = analyzePayline(results);
     if (match) {
       const payout = rewardForMatch(match.code, match.count);
+      const payoutUsd = economyUsdValue(match.code, payout);
+      // Winnings are paid FROM the founder house bank
+      if (playerSession?.playerId) {
+        window.MarkkadeEconomy.recordPayout({
+          playerId: playerSession.playerId,
+          game: "markkdbills",
+          amountUsd: payoutUsd,
+          meta: { code: match.code, units: payout, match: match.count },
+        });
+      }
       state.wallet[match.code] = (state.wallet[match.code] || 0) + payout;
       els.reels.forEach((reel) => {
         if (reel.dataset.code === match.code) reel.classList.add("win");
@@ -432,7 +485,7 @@
         `${match.count}× ${byCode[match.code].symbol} ${match.code} → +${formatAmount(match.code, payout)}`,
         "win"
       );
-      showToast(`💰 +${formatAmount(match.code, payout)}\nAdded to wallet`);
+      showToast(`💰 +${formatAmount(match.code, payout)}\nPaid from house bank`);
     } else {
       setResult("No match — try another spin.", "lose");
     }
@@ -473,6 +526,12 @@
     }
     state.wallet.USD -= amount;
     state.markkade += amount; // 1 USD = 1 MKD
+    if (playerSession?.playerId) {
+      window.MarkkadeEconomy.recordCashOut({
+        playerId: playerSession.playerId,
+        amountUsd: amount,
+      });
+    }
     saveState();
     renderBalances();
     renderWallet();
@@ -508,6 +567,8 @@
   }
 
   function init() {
+    if (guardFounder()) return;
+    ensurePlayerSession();
     bindEvents();
     initReels();
     renderBalances();

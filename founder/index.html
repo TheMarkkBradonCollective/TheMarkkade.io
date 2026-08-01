@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090d" />
+  <title>Founder Ops — Markkade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="founder.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script src="../js/economy.js" defer></script>
+  <script src="founder.js" defer></script>
+</head>
+<body>
+  <div id="loginView" class="login-view">
+    <form class="login-card" id="loginForm">
+      <p class="eyebrow">Markkade</p>
+      <h1>Founder Login</h1>
+      <p class="sub">Live watch only — founders cannot play games.</p>
+      <label>
+        Username
+        <input id="username" name="username" autocomplete="username" required placeholder="founder" />
+      </label>
+      <label>
+        Password
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+      </label>
+      <p class="error" id="loginError" hidden></p>
+      <button class="btn-primary" type="submit">Enter Live Ops</button>
+      <a class="back-link" href="../">← Back to Markkade</a>
+    </form>
+  </div>
+
+  <div id="dashView" class="dash-view" hidden>
+    <header class="dash-top">
+      <div>
+        <a class="brand" href="../">Markkade</a>
+        <h1>Founder Live Ops</h1>
+        <p class="sub">Watch scores & charts update in real time. Play is disabled for founder.</p>
+      </div>
+      <div class="top-actions">
+        <span class="live-pill" id="livePill"><span class="dot"></span> LIVE</span>
+        <button class="ghost" id="logoutBtn" type="button">Log out</button>
+      </div>
+    </header>
+
+    <section class="stat-grid">
+      <article class="stat hero-stat">
+        <p class="stat-label">House Bank</p>
+        <p class="stat-value" id="houseBank">$100,000,000,000</p>
+        <p class="stat-foot" id="houseDelta">vs start</p>
+      </article>
+      <article class="stat">
+        <p class="stat-label">Total Wagered</p>
+        <p class="stat-value sm" id="totalWagered">$0</p>
+      </article>
+      <article class="stat">
+        <p class="stat-label">Total Paid Out</p>
+        <p class="stat-value sm" id="totalPaid">$0</p>
+      </article>
+      <article class="stat">
+        <p class="stat-label">Active Players</p>
+        <p class="stat-value sm" id="activePlayers">0</p>
+      </article>
+    </section>
+
+    <section class="charts">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>House Bank</h2>
+          <span class="muted">Live</span>
+        </div>
+        <canvas id="bankChart" height="120"></canvas>
+      </article>
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Wagers vs Payouts</h2>
+          <span class="muted">Cumulative</span>
+        </div>
+        <canvas id="flowChart" height="120"></canvas>
+      </article>
+    </section>
+
+    <section class="split">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Live Scores</h2>
+          <span class="muted" id="scoreMeta">0 players</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Player</th>
+                <th>Score</th>
+                <th>Wins</th>
+                <th>Spins</th>
+              </tr>
+            </thead>
+            <tbody id="scoreBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Live Activity</h2>
+          <span class="muted">Streaming</span>
+        </div>
+        <ul class="feed" id="activityFeed"></ul>
+      </article>
+    </section>
+
+    <p class="founder-note">Founder play is locked. Open player games in a separate browser/profile to generate live traffic.</p>
+  </div>
+</body>
+</html>

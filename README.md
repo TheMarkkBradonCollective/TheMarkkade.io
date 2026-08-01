@@ -41,11 +41,40 @@ Full game design: [`MARKKD_BILLS.md`](MARKKD_BILLS.md)
 
 USD is the starting currency system used inside Markkade games.
 
-Every player starts with **500 USD**.
+Every player starts with **500 USD** (paid from the founder house bank).
 
 Players earn, collect, trade, and manage USD-based gameplay values.
 
 Future Markkade systems may connect game rewards into the larger Markkade ecosystem.
+
+---
+
+# Founder House Bank
+
+The founder starts with a house bank of **$100,000,000,000**.
+
+| Flow | Effect on house bank |
+|------|----------------------|
+| Player receives starter $500 | Paid **from** house bank |
+| Player wager / loss | Added **to** house bank |
+| Player win / payout | Paid **from** house bank |
+
+The founder **cannot play any games**.
+
+The founder can log in to **Live Ops** and watch:
+
+- Live player scores
+- House bank chart
+- Wagers vs payouts
+- Streaming activity feed
+
+All panels update live as players play.
+
+| Page | Path |
+|------|------|
+| Founder login / Live Ops | [`founder/`](founder/) |
+
+Default demo login: `founder` / `markkade-founder`
 
 ---
 
@@ -158,6 +187,7 @@ Future Markkade games will share:
 |------|------|
 | Markkade hub | [`index.html`](index.html) |
 | Markk'd Bills | [`games/markkdbills/`](games/markkdbills/) |
+| Founder Live Ops | [`founder/`](founder/) |
 
 ```bash
 python3 -m http.server 8080
