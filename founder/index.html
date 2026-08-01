@@ -15,17 +15,17 @@
 </head>
 <body>
   <div id="loginView" class="login-view">
-    <form class="login-card" id="loginForm">
+    <form class="login-card" id="loginForm" novalidate>
       <p class="eyebrow">Markkade</p>
       <h1>Founder Login</h1>
       <p class="sub">Live watch only — founders cannot play games.</p>
       <label>
         Username
-        <input id="username" name="username" autocomplete="username" required placeholder="founder" />
+        <input id="username" name="username" autocomplete="username" placeholder="founder" />
       </label>
       <label>
         Password
-        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <input id="password" name="password" type="password" autocomplete="current-password" />
       </label>
       <p class="error" id="loginError" hidden></p>
       <button class="btn-primary" type="submit">Enter Live Ops</button>

@@ -177,8 +177,13 @@
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     loginError.hidden = true;
-    const username = document.getElementById("username").value;
+    const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
+    if (!username || !password) {
+      loginError.hidden = false;
+      loginError.textContent = "Enter founder username and password.";
+      return;
+    }
     const result = window.MarkkadeEconomy.loginFounder(username, password);
     if (!result.ok) {
       loginError.hidden = false;
