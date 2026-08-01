@@ -31,6 +31,8 @@ Markk'dBills is the first official Markkade game.
 
 It introduces the Markkade gameplay style, economy systems, and player experience.
 
+Full game design: [`MARKKD_BILLS.md`](MARKKD_BILLS.md)
+
 ---
 
 # Currency System
