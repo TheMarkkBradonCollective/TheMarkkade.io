@@ -12,7 +12,7 @@ const GAMES = [
     href: "/games/markkdbills",
     thumb: "$",
     thumbClass: "g1",
-    tag: "Slots",
+    tag: "Live",
     tagClass: "green",
   },
   {
@@ -20,9 +20,9 @@ const GAMES = [
     title: "Global Exchange",
     subtitle: "Trade routes refresh every 5:00",
     href: "/games/markkdbills",
-    thumb: "💱",
+    thumb: "FX",
     thumbClass: "g2",
-    tag: "Market",
+    tag: "Update",
     tagClass: "yellow",
   },
   {
@@ -30,27 +30,34 @@ const GAMES = [
     title: "Currency Wallet",
     subtitle: "Hold EUR · GBP · BTC · more",
     href: "/games/markkdbills",
-    thumb: "🏦",
+    thumb: "W",
     thumbClass: "g3",
-    tag: "Wallet",
-    tagClass: "soft-green",
+    tag: "Soon",
+    tagClass: "soft",
   },
   {
     id: "founder",
     title: "Founder Live Ops",
     subtitle: "Scores · charts · approvals",
     href: "/founder",
-    thumb: "📡",
+    thumb: "OPS",
     thumbClass: "g4",
-    tag: "Ops",
-    tagClass: "soft-yellow",
+    tag: "Live",
+    tagClass: "green",
   },
 ];
 
 const TOURNAMENTS = [
-  { title: "Dollar Rush", viewers: "12.4k", rating: "4.9", progress: 72, cls: "t1", emoji: "💵" },
-  { title: "Crypto Spin", viewers: "8.1k", rating: "4.7", progress: 45, cls: "t2", emoji: "₿" },
-  { title: "Euro Heat", viewers: "6.6k", rating: "4.8", progress: 88, cls: "t3", emoji: "€" },
+  { title: "Dollar Rush", viewers: "12.4k", rating: "4.9", progress: 72, cls: "t1", mark: "$" },
+  { title: "Crypto Spin", viewers: "8.1k", rating: "4.7", progress: 45, cls: "t2", mark: "B" },
+  { title: "Euro Heat", viewers: "6.6k", rating: "4.8", progress: 88, cls: "t3", mark: "E" },
+];
+
+const POPULAR = [
+  { id: "p1", title: "Markk'd Bills", tag: "Slots", href: "/games/markkdbills", art: "g1", mark: "$" },
+  { id: "p2", title: "Exchange Desk", tag: "Market", href: "/games/markkdbills", art: "g2", mark: "FX" },
+  { id: "p3", title: "Wallet Run", tag: "Wallet", href: "/games/markkdbills", art: "g3", mark: "W" },
+  { id: "p4", title: "House Watch", tag: "Ops", href: "/founder", art: "g4", mark: "OPS" },
 ];
 
 const FILTERS = ["Newest", "Free to play", "Multiplayer", "Slots", "Tournaments", "Live"];
@@ -70,353 +77,400 @@ export default function SlotsDashboard() {
         filter === "Multiplayer" ||
         filter === "Live" ||
         hay.includes(filter.toLowerCase()) ||
-        (filter === "Slots" && g.tag === "Slots");
+        (filter === "Slots" && (g.id === "markkdbills" || g.tag === "Live"));
       return matchesQuery && matchesFilter;
     });
   }, [query, filter]);
 
-  return (
-    <div className="dash-shell">
-      <div className="dash-frame">
-        {/* LEFT SIDEBAR — desktop */}
-        <aside className="dash-left panel">
-          <Link className="dash-logo" href="/">
-            <span className="dash-logo-mark">M</span>
-            <span>Markkade</span>
-          </Link>
-          <nav className="side-nav" aria-label="Primary">
-            <Link className="active" href="/">
-              <span>▣</span> Dashboard
-            </Link>
-            <Link href="/games/markkdbills">
-              <span>♠</span> Library
-            </Link>
-            <Link href="/founder">
-              <span>◈</span> Statistic
-            </Link>
-            <Link href="/todos">
-              <span>◎</span> Account
-            </Link>
-            <Link href="/games/markkdbills">
-              <span>◆</span> Redeem
-            </Link>
-            <Link href="/founder">
-              <span>⚙</span> Setting
-            </Link>
-          </nav>
-          <div className="promo-card">
-            <div style={{ fontSize: "2rem", marginBottom: "0.35rem" }}>🎰</div>
-            <h3>Get your reward!</h3>
-            <p>Approved players receive $10,000 from the house bank.</p>
-            <Link className="preorder" href="/games/markkdbills" style={{ width: "100%", justifyContent: "center" }}>
-              Redeem
-            </Link>
-          </div>
-        </aside>
+  const games = filteredGames.length ? filteredGames : GAMES;
 
-        {/* MAIN */}
-        <div className="dash-main">
-          {/* Mobile top bar */}
-          <div className="dash-topbar mobile-only">
-            <Link className="dash-logo" href="/">
-              <span className="dash-logo-mark">M</span>
-            </Link>
-            <label className="dash-search">
-              <span aria-hidden="true">⌕</span>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search games..."
-                aria-label="Search games"
-              />
-            </label>
-            <Link className="dash-icon-btn" href="/founder" aria-label="Notifications" style={{ position: "relative" }}>
+  return (
+    <div className="dash-page">
+      <div className="dash-shell">
+        <header className="top-chrome">
+          <Link className="brand-lockup" href="/">
+            <span className="brand-mark">M</span>
+            <span className="brand-text">
+              <strong>Markkade</strong>
+              <small>Slots Lobby</small>
+            </span>
+          </Link>
+          <nav className="icon-nav" aria-label="Quick">
+            <Link className="icon-btn is-active" href="/" aria-label="Home">
               ⌂
-              <span className="badge" />
             </Link>
-            <Link className="dash-icon-btn" href="/todos" aria-label="Profile">
+            <Link className="icon-btn" href="/games/markkdbills" aria-label="Library">
+              ▦
+            </Link>
+            <Link className="icon-btn" href="/founder" aria-label="Stats">
+              ◈
+            </Link>
+            <Link className="icon-btn" href="/todos" aria-label="Account">
               ◉
             </Link>
+            <Link className="icon-btn" href="/founder" aria-label="Settings">
+              ⚙
+            </Link>
+          </nav>
+          <div className="top-chrome-actions">
+            <Link className="icon-btn" href="/founder" aria-label="Alerts">
+              ⌕
+              <i className="dot-badge" />
+            </Link>
+            <span className="avatar self">MB</span>
           </div>
+        </header>
 
-          {/* Desktop header */}
-          <div className="desktop-only desktop-top">
-            <div>
-              <p className="welcome">Welcome back</p>
-              <h1 className="dash-title">Markkade Slots Lobby</h1>
-            </div>
-            <label className="dash-search">
-              <span aria-hidden="true">⌕</span>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Game Search..."
-                aria-label="Game search"
-              />
-            </label>
-            <div className="top-filters">
-              <select className="select-pill" aria-label="Genre" defaultValue="slots">
-                <option value="slots">Genre · Slots</option>
-                <option value="arcade">Genre · Arcade</option>
-              </select>
-              <select className="select-pill" aria-label="Level" defaultValue="all">
-                <option value="all">Level · All</option>
-                <option value="pro">Level · Pro</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="filter-row tablet-up">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                className={`chip ${filter === f ? "active" : ""}`}
-                onClick={() => setFilter(f)}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-
-          {/* Featured + list */}
-          <section className="hero-with-list">
-            <Link className="hero-card" href="/games/markkdbills">
-              <span className="hero-live">
-                <span className="dot" /> 27.5k watching
+        <div className="dash-grid">
+          <aside className="left-rail">
+            <Link className="brand-lockup side" href="/">
+              <span className="brand-mark">M</span>
+              <span className="brand-text">
+                <strong>Markkade</strong>
+                <small>House Bank Live</small>
               </span>
-              <span className="hero-play" aria-hidden="true">
-                ▶
-              </span>
-              <div className="hero-meta">
-                <div>
-                  <h2>Markk&apos;d Bills</h2>
-                  <p>5-reel currency slots · match · trade · cash out</p>
+            </Link>
+            <nav className="side-nav" aria-label="Primary">
+              <Link className="is-active" href="/">
+                <span>▣</span> Dashboard
+              </Link>
+              <Link href="/games/markkdbills">
+                <span>♠</span> Library
+              </Link>
+              <Link href="/founder">
+                <span>◈</span> Statistic
+              </Link>
+              <Link href="/todos">
+                <span>◎</span> Account
+              </Link>
+              <Link href="/games/markkdbills">
+                <span>◆</span> Redeem
+              </Link>
+              <Link href="/founder">
+                <span>⚙</span> Setting
+              </Link>
+            </nav>
+            <div className="side-promo">
+              <strong>Get your reward!</strong>
+              <p>Approved players receive $10,000 from the house bank.</p>
+              <Link href="/games/markkdbills">Redeem</Link>
+            </div>
+          </aside>
+
+          <main className="dash-main">
+            <div className="mobile-top">
+              <div className="mobile-row">
+                <div className="avatar-stack" aria-hidden="true">
+                  <span className="avatar">A</span>
+                  <span className="avatar">J</span>
+                  <span className="avatar self">MB</span>
                 </div>
-                <span className="hero-time">02:05:87</span>
-              </div>
-            </Link>
-
-            <div className="panel">
-              <div className="section-head">
-                <h2>Today Tournament (3)</h2>
-                <Link className="section-link" href="/games/markkdbills">
-                  Swords (4)
-                </Link>
-              </div>
-              <div className="game-list">
-                {(filteredGames.length ? filteredGames : GAMES).map((game) => (
-                  <Link key={game.id} className="game-row" href={game.href}>
-                    <span className={`game-thumb ${game.thumbClass}`}>{game.thumb}</span>
-                    <span className="game-copy">
-                      <strong>{game.title}</strong>
-                      <span>{game.subtitle}</span>
-                    </span>
-                    <span className={`pill ${game.tagClass}`}>{game.tag}</span>
+                <div className="mobile-actions">
+                  <Link className="icon-btn" href="/founder" aria-label="Alerts">
+                    ⌕
+                    <i className="dot-badge" />
                   </Link>
-                ))}
+                  <Link className="icon-btn" href="/todos" aria-label="Profile">
+                    ◉
+                  </Link>
+                </div>
               </div>
+              <label className="searchbar">
+                <span className="search-ico" aria-hidden="true">
+                  ⌕
+                </span>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search games..."
+                  aria-label="Search games"
+                />
+              </label>
             </div>
-          </section>
 
-          {/* Coming soon — desktop/tablet accent from mock 3 */}
-          <section className="coming-card tablet-up">
-            <p className="eyebrow">COMING SOON</p>
-            <h2>Markkade Season 2</h2>
-            <div className="tag-row">
-              <span className="pill soft-green">Slots</span>
-              <span className="pill soft-yellow">Crypto</span>
-              <span className="pill soft-green">Exchange</span>
+            <div className="desktop-welcome">
+              <div className="welcome-copy">
+                <p>Welcome back</p>
+                <h1>Markkade Slots Lobby</h1>
+              </div>
+              <label className="searchbar wide">
+                <span className="search-ico" aria-hidden="true">
+                  ⌕
+                </span>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Game Search..."
+                  aria-label="Game search"
+                />
+              </label>
             </div>
-            <p>
-              New seasonal markets, rare currency drops, and cross-game Markkade rewards. Pre-order seat
-              unlocks early exchange scanner access.
-            </p>
-            <Link className="preorder" href="/games/markkdbills">
-              PRE-ORDERING
-            </Link>
-            <span className="coming-art" aria-hidden="true">
-              🪙
-            </span>
-          </section>
 
-          <section className="panel">
-            <div className="section-head">
-              <h2>Tournaments</h2>
-              <Link className="section-link" href="/games/markkdbills">
-                see all
-              </Link>
+            <div className="category-tabs" role="tablist" aria-label="Filters">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === f}
+                  className={`cat-tab ${filter === f ? "is-active" : ""}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f}
+                </button>
+              ))}
             </div>
-            <div className="tour-scroller">
-              {TOURNAMENTS.map((t) => (
-                <Link key={t.title} className={`tour-card ${t.cls}`} href="/games/markkdbills">
-                  <span className="emoji" aria-hidden="true">
-                    {t.emoji}
+
+            <div className="lobby-grid">
+              <section className="area-featured">
+                <Link className="hero-live" href="/games/markkdbills">
+                  <span className="hero-media" aria-hidden="true" />
+                  <span className="live-badge">
+                    <i className="live-dot" /> 27.5k watching
                   </span>
-                  <h3>{t.title}</h3>
-                  <div className="meta">
-                    <span>👁 {t.viewers}</span>
-                    <span>★ {t.rating}</span>
-                  </div>
-                  <div className="progress" aria-label={`${t.progress}% complete`}>
-                    <i style={{ width: `${t.progress}%` }} />
-                  </div>
+                  <span className="hero-play" aria-hidden="true">
+                    ▶
+                  </span>
+                  <span className="hero-foot">
+                    <span>
+                      <strong>Markk&apos;d Bills</strong>
+                      <small>5-reel currency slots · match · trade · cash out</small>
+                    </span>
+                    <span className="hero-timer">02:05:87</span>
+                  </span>
                 </Link>
-              ))}
-            </div>
-          </section>
 
-          <div className="finance-inline mobile-only">
-            <FinancePanel />
-            <section className="panel trends">
-              <span className="orbit">€</span>
-              <span className="orbit">£</span>
-              <span className="orbit">¥</span>
-              <span className="orbit">₿</span>
-              <div className="trends-number">56</div>
-            </section>
-          </div>
-
-          <section className="panel tablet-up">
-            <div className="section-head">
-              <h2>Popular Choice&apos;s</h2>
-              <Link className="section-link" href="/games/markkdbills">
-                see all
-              </Link>
-            </div>
-            <div className="popular-grid">
-              {GAMES.slice(0, 3).map((g) => (
-                <Link key={g.id} className="popular-card" href={g.href}>
-                  <div className={`popular-art ${g.thumbClass}`}>{g.thumb}</div>
-                  <div className="body">
-                    <h3>{g.title}</h3>
+                <div className="coming-card">
+                  <span className="coming-art" aria-hidden="true" data-mark="MK" />
+                  <div className="coming-copy">
+                    <p className="coming-kicker">COMING SOON</p>
+                    <h2>Markkade Season 2</h2>
                     <div className="tag-row">
-                      <span className={`pill ${g.tagClass}`}>{g.tag}</span>
+                      <span className="pill soft-green">Slots</span>
+                      <span className="pill soft-yellow">Crypto</span>
+                      <span className="pill soft-green">Exchange</span>
                     </div>
-                    <div className="price-row">
-                      <span className="price">Play</span>
-                      <span className="cart-btn" aria-hidden="true">
-                        →
-                      </span>
-                    </div>
+                    <p>New seasonal markets, rare currency drops, and early exchange scanner access.</p>
+                    <Link className="cta-fill" href="/games/markkdbills">
+                      PRE-ORDERING
+                    </Link>
                   </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        </div>
+                </div>
+              </section>
 
-        {/* RIGHT SIDEBAR — desktop */}
-        <aside className="dash-right">
-          <div className="panel">
-            <div className="profile-block">
-              <div className="avatar">MB</div>
+              <section className="panel area-games">
+                <div className="panel-head">
+                  <h2>Today Tournament (3)</h2>
+                  <Link href="/games/markkdbills">Swords (4)</Link>
+                </div>
+                <div className="game-list">
+                  {games.map((game) => (
+                    <Link key={game.id} className="game-row" href={game.href}>
+                      <span className={`game-thumb ${game.thumbClass}`}>{game.thumb}</span>
+                      <span className="game-meta">
+                        <strong>{game.title}</strong>
+                        <small>{game.subtitle}</small>
+                      </span>
+                      <span className={`pill ${game.tagClass}`}>{game.tag}</span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel area-trends">
+                <div className="panel-head">
+                  <h2>Trends</h2>
+                  <Link href="/founder">see all</Link>
+                </div>
+                <div className="trends-body">
+                  <div className="trend-stat">
+                    <strong>56</strong>
+                    <small>Active rooms tonight</small>
+                  </div>
+                  <div className="orbit" aria-hidden="true">
+                    <span className="avatar">A</span>
+                    <span className="avatar">J</span>
+                    <span className="avatar">K</span>
+                    <span className="avatar self">MB</span>
+                  </div>
+                </div>
+              </section>
+
+              <section className="panel area-tourney">
+                <div className="panel-head">
+                  <h2>Tournaments</h2>
+                  <Link href="/games/markkdbills">see all</Link>
+                </div>
+                <div className="tourney-grid">
+                  {TOURNAMENTS.map((t) => (
+                    <Link key={t.title} className={`tourney-card ${t.cls}`} href="/games/markkdbills">
+                      <span className="tourney-art" data-mark={t.mark} />
+                      <span className="tourney-body">
+                        <strong>{t.title}</strong>
+                        <span className="tourney-meta">
+                          <span>{t.viewers}</span>
+                          <span>★ {t.rating}</span>
+                        </span>
+                        <span className="progress" aria-label={`${t.progress}%`}>
+                          <i style={{ width: `${t.progress}%` }} />
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel area-popular">
+                <div className="panel-head">
+                  <h2>Popular Choice&apos;s</h2>
+                  <Link href="/games/markkdbills">see all</Link>
+                </div>
+                <div className="popular-grid">
+                  {POPULAR.map((g) => (
+                    <Link key={g.id} className="pop-card" href={g.href}>
+                      <span className={`pop-art ${g.art}`} data-mark={g.mark} />
+                      <span className="pop-body">
+                        <strong>{g.title}</strong>
+                        <small>{g.tag}</small>
+                        <span className="pop-row">
+                          <span className="price">Play</span>
+                          <span className="cart">→</span>
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel area-finance mobile-finance">
+                <FinancePanel />
+              </section>
+            </div>
+          </main>
+
+          <aside className="right-rail">
+            <div className="panel profile-card">
+              <span className="avatar self lg">MB</span>
               <div>
                 <strong>Markk Player</strong>
-                <div className="online">● Online</div>
+                <small className="online">● Online</small>
               </div>
             </div>
-            <div className="balance-label">
-              <span>YOUR BALANCE</span>
-              <button className="plus-btn" type="button" aria-label="Add funds">
-                +
-              </button>
-            </div>
-            <div className="balance-value">$10,000</div>
-            <Link className="receipt-link" href="/founder">
-              Check detail your receipt.
-            </Link>
-          </div>
 
-          <FinancePanel />
-
-          <div className="panel">
-            <div className="section-head">
-              <h3>Updating...</h3>
-            </div>
-            <ul className="note-list">
-              <li>
-                <span className="game-thumb g1">$</span>
-                <div>
-                  <strong>Markk&apos;d Bills</strong>
-                  <div className="bar">
-                    <i style={{ width: "78%" }} />
-                  </div>
-                </div>
-              </li>
-              <li>
-                <span className="game-thumb g2">💱</span>
-                <div>
-                  <strong>Exchange Market</strong>
-                  <div className="bar">
-                    <i style={{ width: "42%" }} />
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div className="panel">
-            <div className="section-head">
-              <h3>Friend Activity</h3>
-            </div>
-            <ul className="friend-list">
-              <li>
-                <span className="avatar">A</span>
-                <div>
-                  <strong>Ava</strong>
-                  <div style={{ color: "var(--dash-muted)", fontSize: "0.78rem" }}>
-                    Playing Markk&apos;d Bills
-                  </div>
-                </div>
-              </li>
-              <li>
-                <span className="avatar">J</span>
-                <div>
-                  <strong>Jordan</strong>
-                  <div style={{ color: "var(--dash-muted)", fontSize: "0.78rem" }}>
-                    Trading EUR → USD
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div className="invite-card">
-              <strong>Game Invite</strong>
-              <p style={{ margin: "0.35rem 0 0", color: "var(--dash-muted)", fontSize: "0.82rem" }}>
-                Join Markk&apos;d Bills spin room now.
-              </p>
-              <div className="invite-actions">
-                <Link className="btn-join" href="/games/markkdbills">
-                  I&apos;M JOIN
-                </Link>
-                <button className="btn-decline" type="button">
-                  NO, DECLINE
+            <div className="panel balance-card">
+              <div className="balance-label">
+                <span>YOUR BALANCE</span>
+                <button className="plus-btn" type="button" aria-label="Add funds">
+                  +
                 </button>
               </div>
+              <strong>$10,000</strong>
+              <Link className="receipt" href="/founder">
+                Check detail your receipt.
+              </Link>
             </div>
-          </div>
-        </aside>
+
+            <div className="panel finance-side">
+              <FinancePanel compact />
+            </div>
+
+            <div className="panel progress-card">
+              <h3>Updating...</h3>
+              <ul className="progress-list">
+                <li>
+                  <strong>
+                    Markk&apos;d Bills <span>78%</span>
+                  </strong>
+                  <span className="progress">
+                    <i style={{ width: "78%" }} />
+                  </span>
+                </li>
+                <li>
+                  <strong>
+                    Exchange Market <span>42%</span>
+                  </strong>
+                  <span className="progress">
+                    <i style={{ width: "42%" }} />
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="panel notify-card">
+              <h3>Notifications</h3>
+              <ul className="notify-list">
+                <li>
+                  <span className="avatar">A</span>
+                  <div>
+                    <strong>Ava joined Dollar Rush</strong>
+                    <small>2 min ago</small>
+                  </div>
+                </li>
+                <li>
+                  <span className="avatar">J</span>
+                  <div>
+                    <strong>Jordan cashed EUR → USD</strong>
+                    <small>11 min ago</small>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div className="panel friends-card">
+              <h3>Friend Activity</h3>
+              <ul className="friend-list">
+                <li>
+                  <span className="avatar">A</span>
+                  <div>
+                    <strong>Ava</strong>
+                    <small>Playing Markk&apos;d Bills</small>
+                  </div>
+                  <i className="online-dot" />
+                </li>
+                <li>
+                  <span className="avatar">J</span>
+                  <div>
+                    <strong>Jordan</strong>
+                    <small>Trading EUR → USD</small>
+                  </div>
+                  <i className="online-dot" />
+                </li>
+              </ul>
+              <div className="invite-card">
+                <strong>Game Invite</strong>
+                <p>Join Markk&apos;d Bills spin room now.</p>
+                <div className="invite-actions">
+                  <Link className="btn-join" href="/games/markkdbills">
+                    I&apos;M JOIN
+                  </Link>
+                  <button className="btn-decline" type="button">
+                    NO, DECLINE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="dash-bottom" aria-label="Mobile">
+      <nav className="mobile-dock" aria-label="Mobile">
         <Link href="/">
-          <span className="ico">⌂</span>
+          <span>⌂</span>
           Home
         </Link>
         <Link href="/founder">
-          <span className="ico">🛡</span>
+          <span>◈</span>
           Chart
         </Link>
-        <Link className="fab" href="/games/markkdbills" aria-label="Games">
+        <Link className="dock-fab" href="/games/markkdbills" aria-label="Games">
           ▶
         </Link>
-        <Link className="active" href="/">
-          <span className="ico">▦</span>
+        <Link className="is-active" href="/">
+          <span>▦</span>
           Games
         </Link>
         <Link href="/todos">
-          <span className="ico">⚙</span>
+          <span>⚙</span>
           Settings
         </Link>
       </nav>
@@ -424,9 +478,9 @@ export default function SlotsDashboard() {
   );
 }
 
-function FinancePanel() {
+function FinancePanel({ compact = false }: { compact?: boolean }) {
   return (
-    <section className="panel finance-card">
+    <div className={`finance-panel ${compact ? "is-compact" : ""}`}>
       <h2>Financial Game</h2>
       <div className="ring-wrap" aria-hidden="true">
         <svg viewBox="0 0 120 120">
@@ -465,7 +519,6 @@ function FinancePanel() {
           />
         </svg>
         <div className="ring-center">
-          <div className="ring-mascot">🎰</div>
           <strong>$180</strong>
           <span>Total Income</span>
         </div>
@@ -484,20 +537,22 @@ function FinancePanel() {
           <span>Expenses</span>
         </div>
       </div>
-      <div className="spark">
-        <svg viewBox="0 0 200 54" preserveAspectRatio="none">
-          <path
-            d="M0 40 C 20 36, 30 20, 50 24 S 80 48, 100 30 S 140 10, 160 22 S 180 40, 200 18"
-            fill="none"
-            stroke="#3dffb0"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <Link className="analysis-btn" href="/founder" style={{ display: "grid", placeItems: "center", textDecoration: "none" }}>
+      {!compact && (
+        <div className="spark" aria-hidden="true">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path
+              d="M0 28 C 20 24, 30 12, 50 16 S 80 34, 100 20 S 140 6, 160 14 S 180 28, 200 10"
+              fill="none"
+              stroke="#3dffb0"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      )}
+      <Link className="analysis-btn" href="/founder">
         Analysis
       </Link>
-    </section>
+    </div>
   );
 }
