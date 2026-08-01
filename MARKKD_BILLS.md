@@ -151,6 +151,210 @@ CHF → EUR
 
 ---
 
+# ⏱️ Exchange Availability Timer
+
+The Global Exchange Market operates on a timed rotation system.
+
+Players can always see when the next market update will happen.
+
+---
+
+# 🌎 Global Exchange Countdown
+
+Example:
+
+```
+GLOBAL EXCHANGE MARKET
+
+Next Market Update:
+
+⏱️ 04:32
+
+Available Exchanges:
+
+€ → $
+€ → £
+¥ → €
+
+Locked Exchanges:
+
+₿ → $
+₣ → €
+₹ → $
+```
+
+When the timer reaches zero:
+
+```
+00:00
+
+MARKET UPDATED
+```
+
+A new random exchange market is generated.
+
+---
+
+# 🔄 Exchange Refresh System
+
+The exchange availability changes automatically.
+
+Example:
+
+```
+Current Market:
+
+OPEN
+
+€ → $
+£ → €
+¥ → £
+
+
+Timer:
+
+⏱️ 02:15
+```
+
+After refresh:
+
+```
+NEW MARKET
+
+OPEN
+
+¥ → $
+₿ → €
+₹ → £
+
+
+Timer:
+
+⏱️ 05:00
+```
+
+---
+
+# ⏰ Timer Rules
+
+- Timer is always visible in the exchange screen
+- Players cannot manually force a refresh
+- All available trades remain active until the timer expires
+- When the timer reaches zero, the market randomly changes
+- Players must decide whether to trade now or wait
+
+---
+
+# 🎲 Market Timing Strategy
+
+Players must choose:
+
+## Trade Now
+
+Example:
+
+```
+€ → $
+
+AVAILABLE
+
+Convert immediately
+```
+
+Risk:
+
+```
+Better routes may appear later
+```
+
+---
+
+## Wait For Update
+
+Example:
+
+```
+Current:
+
+€ → £
+
+Waiting...
+
+⏱️ 00:45
+```
+
+Risk:
+
+```
+Current exchange may disappear
+```
+
+---
+
+# 🔔 Market Update Notifications
+
+When the timer expires:
+
+Player receives:
+
+```
+🌎 GLOBAL MARKET UPDATED
+
+New exchanges are available!
+
+Check your wallet.
+```
+
+---
+
+# UI Display
+
+Exchange screen header:
+
+```
+💱 GLOBAL EXCHANGE
+
+Market Refresh:
+⏱️ 03:59
+
+Current Trading Routes:
+12 Available
+8 Locked
+```
+
+---
+
+# Advanced Features
+
+## VIP Market Scanner
+
+Allows players to preview:
+
+```
+Upcoming Market Probability:
+
+€ → $
+75% Chance
+
+₿ → USD
+25% Chance
+```
+
+## Emergency Exchange
+
+Rare event:
+
+```
+⚡ FLASH MARKET
+
+All exchanges unlocked
+
+Duration:
+60 seconds
+```
+
+---
+
 # 🔁 Currency Trading Routes
 
 Players may need multiple trades to reach USD.
