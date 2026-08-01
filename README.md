@@ -27,7 +27,7 @@ The goal is to create a complete digital gaming universe.
 
 ## Markk'dBills 🎰
 
-Markk'dBills is the first official Markkade game.
+Markk'dBills is the first official Markkade game — a **5-slot machine** where players spin currency symbols, trade through a global exchange, and cash out to Markkade.
 
 It introduces the Markkade gameplay style, economy systems, and player experience.
 

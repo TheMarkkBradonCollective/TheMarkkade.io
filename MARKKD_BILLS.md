@@ -2,15 +2,30 @@
 
 ## Overview
 
-**Markk'd Bills** is a currency-based match-3 game where players collect real-world currency symbols, earn different currencies, trade currencies through a randomized global exchange market, convert their earnings into USD, and finally exchange USD into **Markkade**.
+**Markk'd Bills** is a currency-based **5-slot machine** game where players spin five reels of real-world currency symbols, earn different currencies, trade currencies through a randomized global exchange market, convert their earnings into USD, and finally exchange USD into **Markkade**.
 
 Markk'd Bills turns currency collecting into a strategy game where players must decide when to hold, trade, and exchange currencies.
+
+---
+
+# 🎰 5-Slot Machine
+
+Markk'd Bills runs on a **5-reel slot machine**.
+
+```
+[  €  ] [  €  ] [  €  ] [  $  ] [  £  ]
+ Reel 1  Reel 2  Reel 3  Reel 4  Reel 5
+```
+
+Players spin all five reels and score when matching currency symbols land across the payline.
 
 ---
 
 # 🎮 Core Gameplay Loop
 
 ```
+Spin 5-Slot Machine
+          ↓
 Match Currency Symbols
           ↓
 Earn Currency Bills
@@ -28,14 +43,14 @@ Use Markkade Across Games
 
 ---
 
-# 💱 Match-3 Currency System
+# 💱 Match Currency System
 
-Players match 3 or more identical currency symbols.
+Players match 3 or more identical currency symbols across the 5 reels.
 
 Example:
 
 ```
-€   €   €
+€   €   €   $   £
 ```
 
 Reward:
@@ -43,6 +58,14 @@ Reward:
 ```
 + €1.00 EUR
 ```
+
+Matching more reels increases the payout:
+
+| Match | Result |
+|---|---|
+| 3 of a kind | Base currency reward |
+| 4 of a kind | Increased currency reward |
+| 5 of a kind | Max currency reward |
 
 The currency earned goes directly into the player's wallet.
 
