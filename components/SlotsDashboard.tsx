@@ -75,9 +75,10 @@ export default function SlotsDashboard() {
         filter === "Newest" ||
         filter === "Free to play" ||
         filter === "Multiplayer" ||
-        filter === "Live" ||
-        hay.includes(filter.toLowerCase()) ||
-        (filter === "Slots" && (g.id === "markkdbills" || g.tag === "Live"));
+        filter === "Slots" ||
+        (filter === "Live" && g.tag === "Live") ||
+        (filter === "Tournaments" && true) ||
+        hay.includes(filter.toLowerCase());
       return matchesQuery && matchesFilter;
     });
   }, [query, filter]);

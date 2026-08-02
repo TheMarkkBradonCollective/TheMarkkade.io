@@ -743,12 +743,13 @@ img { display: block; max-width: 100%; }
 .coming-card {
   position: relative;
   overflow: hidden;
-  min-height: 236px;
-  border-radius: 20px;
-  border: 1px solid rgba(61, 255, 176, 0.18);
+  min-height: 280px;
+  border-radius: 22px;
+  border: 1px solid rgba(61, 255, 176, 0.22);
   background:
-    radial-gradient(circle at 80% 40%, rgba(61, 255, 176, 0.2), transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(61, 255, 176, 0.24), transparent 42%),
     linear-gradient(120deg, #1a3426, #0c1711 55%, #183022);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
 .coming-art {
@@ -780,12 +781,12 @@ img { display: block; max-width: 100%; }
 .coming-copy {
   position: relative;
   z-index: 1;
-  padding: 18px;
-  max-width: 28rem;
+  padding: 24px 22px;
+  max-width: 32rem;
   display: grid;
-  gap: 6px;
+  gap: 8px;
   align-content: center;
-  min-height: 236px;
+  min-height: 280px;
 }
 
 .coming-kicker {
@@ -846,7 +847,7 @@ img { display: block; max-width: 100%; }
 
 .pop-art {
   display: block;
-  height: 96px;
+  height: 118px;
   position: relative;
   background: linear-gradient(145deg, #214533, #0f1d16);
 }
@@ -1150,13 +1151,13 @@ img { display: block; max-width: 100%; }
   left: 50%;
   bottom: calc(8px + var(--safe-bottom));
   transform: translateX(-50%);
-  width: min(400px, calc(100% - 16px));
+  width: min(420px, calc(100% - 12px));
   z-index: 40;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: end;
-  gap: 2px;
-  padding: 8px 8px 10px;
+  gap: 0;
+  padding: 10px 6px 10px;
   border-radius: 22px;
   border: 1px solid rgba(61, 255, 176, 0.2);
   background: rgba(10, 16, 20, 0.94);
@@ -1185,9 +1186,12 @@ img { display: block; max-width: 100%; }
   justify-items: center;
   gap: 2px;
   color: var(--dash-muted);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  padding: 4px 2px;
+  padding: 4px 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mobile-dock a span {
@@ -1363,11 +1367,21 @@ img { display: block; max-width: 100%; }
   }
 
   .lobby-grid {
-    grid-template-columns: 1.35fr 0.95fr;
+    grid-template-columns: 1.4fr 1fr;
     grid-template-areas:
       "featured games"
       "trends tourney";
-    gap: 10px;
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .hero-play {
+    width: 64px;
+    height: 64px;
+    font-size: 1.25rem;
   }
 
   .area-featured { grid-area: featured; }
@@ -1415,8 +1429,30 @@ img { display: block; max-width: 100%; }
   }
 
   .dash-grid {
-    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    grid-template-columns: 230px minmax(0, 1fr) 300px;
     min-height: calc(100vh - 96px);
+  }
+
+  .dash-main {
+    padding: 16px 18px;
+  }
+
+  .coming-copy h2 {
+    font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+  }
+
+  .cta-fill {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 0.9rem;
+  }
+
+  .pop-art {
+    height: 132px;
+  }
+
+  .pop-art::after {
+    font-size: 1.7rem;
   }
 
   .left-rail {
